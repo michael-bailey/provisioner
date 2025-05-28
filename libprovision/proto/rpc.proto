@@ -17,3 +17,42 @@ service Greeter {
   // Sends a greeting
   rpc SayHello (HelloRequest) returns (HelloReply);
 }
+
+service Provisioner {
+  rpc Create (CreateRequest) returns (CreateResponse);
+  rpc Restart (RestartRequest) returns (RestartResponse);
+  rpc Pull (PullRequest) returns (PullResponse);
+  rpc Delete (DeleteRequest) returns (DeleteResponse);
+}
+
+message CreateRequest {
+  
+}
+
+message CreateResponse {
+
+}
+
+message RestartRequest {
+  
+}
+
+message RestartResponse {
+
+}
+
+message PullRequest {
+  
+}
+
+message PullResponse {
+
+}
+
+message DeleteRequest {
+  
+}
+
+message DeleteResponse {
+
+}

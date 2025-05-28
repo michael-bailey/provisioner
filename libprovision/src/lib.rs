@@ -12,4 +12,20 @@ pub mod hello_world {
         HelloReply,
         HelloRequest
     };
+
+    pub use proto::{
+        provisioner_server::{
+            ProvisionerServer,
+            Provisioner
+        },
+        provisioner_client::ProvisionerClient,
+        CreateRequest,
+        CreateResponse,
+        RestartRequest,
+        RestartResponse,
+        PullRequest,
+        PullResponse,
+        DeleteRequest,
+        DeleteResponse,
+    };
 }

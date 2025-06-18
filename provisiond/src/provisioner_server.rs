@@ -24,6 +24,9 @@ impl ProvisionerImpl {
         service_name: String,
         queue: VecDeque<Box<dyn FnOnce(String) -> () + Send>>,
     ) -> Result<(), Status> {
+        
+        info!("Unwinding {service_name} total steps {step_count}", service_name = service_name, step_count = queue.len());
+        
         for f in queue.into_iter().rev() {
             f(service_name.clone());
         }

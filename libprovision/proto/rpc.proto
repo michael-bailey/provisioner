@@ -26,7 +26,7 @@ service Provisioner {
 }
 
 message CreateRequest {
-  
+  string service_name = 1;
 }
 
 message CreateResponse {
@@ -34,7 +34,7 @@ message CreateResponse {
 }
 
 message RestartRequest {
-  
+
 }
 
 message RestartResponse {
@@ -42,7 +42,7 @@ message RestartResponse {
 }
 
 message PullRequest {
-  
+
 }
 
 message PullResponse {
@@ -50,7 +50,7 @@ message PullResponse {
 }
 
 message DeleteRequest {
-  
+
 }
 
 message DeleteResponse {

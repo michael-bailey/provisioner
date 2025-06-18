@@ -4,28 +4,15 @@ pub mod hello_world {
     }
 
     pub use proto::{
-        greeter_server::{
-            GreeterServer,
-            Greeter,
-        },
+        HelloReply, HelloRequest,
         greeter_client::GreeterClient,
-        HelloReply,
-        HelloRequest
+        greeter_server::{Greeter, GreeterServer},
     };
 
     pub use proto::{
-        provisioner_server::{
-            ProvisionerServer,
-            Provisioner
-        },
+        CreateRequest, CreateResponse, DeleteRequest, DeleteResponse, PullRequest, PullResponse,
+        RestartRequest, RestartResponse,
         provisioner_client::ProvisionerClient,
-        CreateRequest,
-        CreateResponse,
-        RestartRequest,
-        RestartResponse,
-        PullRequest,
-        PullResponse,
-        DeleteRequest,
-        DeleteResponse,
+        provisioner_server::{Provisioner, ProvisionerServer},
     };
 }

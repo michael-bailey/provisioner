@@ -1,0 +1,13 @@
+[Unit]
+Description=Starts the provisioner daemon
+After=
+Wants=network-online.target
+
+[Service]
+Restart=always
+Type=simple
+ExecStart=provisiond
+Environment=
+
+[Install]
+WantedBy=multi-user.target

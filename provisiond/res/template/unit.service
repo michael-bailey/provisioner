@@ -1,0 +1,15 @@
+[Unit]
+Description=Service file for {service_name}
+After=provisiond.service
+Wants=provisiond.service
+
+[Service]
+WorkingDirectory=/mnt/srv/{service_name}
+ExecStart=/bin/sh -c 'docker compose up'
+ExecStop=/bin/sh -c 'docker compose down'
+User=server-daemon
+Group=server-daemon
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

@@ -19,7 +19,7 @@ pub struct ProvisionerImpl {
 }
 
 impl ProvisionerImpl {
-    
+
     pub(crate) fn unwind(
         &self,
         queue: VecDeque<Box<dyn FnOnce() -> () + Send>>,
@@ -49,73 +49,80 @@ impl Provisioner for ProvisionerImpl {
     ) -> Result<Response<CreateResponse>, Status> {
         let service_name = request.get_ref().clone().service_name;
         info!(
-            "got create request to make service with name: {}",
+            "Got create request to make service with name: {}",
             service_name
         );
 
         info!("Creating undo queue for: {}", service_name);
         let mut undo_stack: VecDeque<Box<dyn FnOnce() -> () + Send>> = VecDeque::new();
 
+
         info!("Creating folder for: {}", service_name);
         let name = service_name.clone();
         let folder_res = self.create_executor.create_folder(name);
+
+        if let Err(e) = folder_res {
+            info!("Folder creation failed unwinding stack for {} got error {}", service_name, e.to_string());
+            let _ = self.unwind(undo_stack);
+            return Err(Status::new(Code::Internal, "Error creating service folder"));
+        }
 
         info!("Appending undo folder for: {}", service_name);
         let name = service_name.clone();
         let delete_executor = self.delete_executor.clone();
         undo_stack.push_back(Box::new(move || {
-            info!("deleting folder for: {}", name);
+            info!("Deleting folder for: {}", name);
             delete_executor.delete_folder(name).unwrap();
         }));
 
-        if let Err(_) = folder_res {
-            info!("folder creation failed unwinding stack: {}", service_name);
-            let _ = self.unwind(undo_stack);
-            return Err(Status::new(Code::Internal, "Error creating service folder"));
-        }
 
         info!("Creating compose file for: {}", service_name);
         let name = service_name.clone();
         let compose_file_res = self.create_executor.create_compose_file(name);
 
+        if let Err(e) = compose_file_res {
+            info!("Compose file creation failed unwinding stack for {} got error {}", service_name, e.to_string());
+            let _ = self.unwind(undo_stack);
+            return Err(Status::new(Code::Internal, "Error creating compose file"));
+        }
+
         info!("Appending undo compose file for: {}", service_name);
         let name = service_name.clone();
         let delete_executor = self.delete_executor.clone();
         undo_stack.push_back(Box::new(move || {
-            info!("deleting compose file for: {}", name);
+            info!("Deleting compose file for: {}", name);
             delete_executor.delete_compose_file(name).unwrap();
         }));
 
-        if let Err(_) = compose_file_res {
-            info!(
-                "compose file creation failed unwinding stack: {}",
-                service_name
-            );
-            let _ = self.unwind(undo_stack);
-            return Err(Status::new(Code::Internal, "Error creating compose file"));
-        }
 
         info!("Creating env file for: {}", service_name);
         let name = service_name.clone();
         let env_file_res = self.create_executor.create_env_file(name);
 
-        info!("Appending undo env file for: {}", service_name);
-        let name = service_name.clone();
-        let delete_executor = self.delete_executor.clone();
-        undo_stack.push_back(Box::new(move || {
-            info!("deleting env file for: {}", name);
-            delete_executor.delete_env_file(name).unwrap();
-        }));
-
-        if let Err(_) = env_file_res {
-            info!("env file creation failed unwinding stack: {}", service_name);
+        if let Err(e) = env_file_res {
+            info!("Env file creation failed unwinding stack for {} got error {}", service_name, e.to_string());
             let _ = self.unwind(undo_stack);
             return Err(Status::new(Code::Internal, "Error creating compose file"));
         }
 
+        info!("Appending undo env file for: {}", service_name);
+        let name = service_name.clone();
+        let delete_executor = self.delete_executor.clone();
+        undo_stack.push_back(Box::new(move || {
+            info!("Deleting env file for: {}", name);
+            delete_executor.delete_env_file(name).unwrap();
+        }));
+
+
         info!("Creating unit file for: {}", service_name);
         let name = service_name.clone();
         let unit_file_res = self.create_executor.create_systemd_unit(name);
+
+        if let Err(e) = unit_file_res {
+            info!("Unit file creation failed unwinding stack for {} got error {}", service_name, e.to_string());
+            let _ = self.unwind(undo_stack);
+            return Err(Status::new(Code::Internal, "Error creating compose file"));
+        }
 
         info!("Appending undo unit file for: {}", service_name);
         let name = service_name.clone();
@@ -125,14 +132,6 @@ impl Provisioner for ProvisionerImpl {
             delete_executor.delete_systemd_unit(name).unwrap();
         }));
 
-        if let Err(_) = unit_file_res {
-            info!(
-                "unit file creation failed unwinding stack: {}",
-                service_name
-            );
-            let _ = self.unwind(undo_stack);
-            return Err(Status::new(Code::Internal, "Error creating compose file"));
-        }
 
         info!("Created service folder for: {}", service_name);
         Ok(Response::new(CreateResponse {}))
@@ -142,12 +141,12 @@ impl Provisioner for ProvisionerImpl {
         &self,
         request: Request<RestartRequest>,
     ) -> Result<Response<RestartResponse>, Status> {
-        info!("got restart request: {:?}", request.get_ref());
+        info!("Got restart request: {:?}", request.get_ref());
         Ok(Response::new(RestartResponse {}))
     }
 
     async fn pull(&self, request: Request<PullRequest>) -> Result<Response<PullResponse>, Status> {
-        info!("got pull request: {:?}", request.get_ref());
+        info!("Got pull request: {:?}", request.get_ref());
         Ok(Response::new(PullResponse {}))
     }
 
@@ -155,7 +154,7 @@ impl Provisioner for ProvisionerImpl {
         &self,
         request: Request<DeleteRequest>,
     ) -> Result<Response<DeleteResponse>, Status> {
-        info!("got delete request: {:?}", request.get_ref());
+        info!("Got delete request: {:?}", request.get_ref());
         Ok(Response::new(DeleteResponse {}))
     }
 }

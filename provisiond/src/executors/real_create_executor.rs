@@ -13,7 +13,7 @@ pub struct RealCreateExecutor;
 impl CreateExecutor for RealCreateExecutor {
     fn create_folder(&self, service_name: String) -> Result<(), CreateExecutorError> {
         let folder_path = PathBuf::from(format!("/mnt/srv/{}", service_name));
-        info!("checking for folder at path {}", folder_path.display());
+        info!("Checking for folder at path {}", folder_path.display());
 
         if folder_path.exists() {
             info!("Folder {} already exists", folder_path.display());
@@ -43,7 +43,7 @@ impl CreateExecutor for RealCreateExecutor {
             File::create(docker_compose_file).map_err(|err| match err.kind() {
                 ErrorKind::AlreadyExists => CreateExecutorError::new(
                     CreateErrorType::ComposeFileExists,
-                    "docker compose file already exists?".to_owned(),
+                    "Docker compose file already exists?".to_owned(),
                 ),
                 _ => CreateExecutorError::new(CreateErrorType::OtherIO, err.to_string()),
             })?;
@@ -53,7 +53,7 @@ impl CreateExecutor for RealCreateExecutor {
             .map_err(|err| match err.kind() {
                 ErrorKind::PermissionDenied => CreateExecutorError::new(
                     CreateErrorType::PermissionError,
-                    "failed to write to docker compose due to incorrect permissions".to_owned(),
+                    "Failed to write to docker compose due to incorrect permissions".to_owned(),
                 ),
                 _ => CreateExecutorError::new(CreateErrorType::OtherIO, err.to_string()),
             })
@@ -83,7 +83,7 @@ impl CreateExecutor for RealCreateExecutor {
             .map_err(|err| match err.kind() {
                 ErrorKind::PermissionDenied => CreateExecutorError::new(
                     CreateErrorType::PermissionError,
-                    "failed to write to docker compose due to incorrect permissions".to_owned(),
+                    "Failed to write to docker compose due to incorrect permissions".to_owned(),
                 ),
                 _ => CreateExecutorError::new(CreateErrorType::FileWriteFailed, err.to_string()),
             })
@@ -127,7 +127,7 @@ impl CreateExecutor for RealCreateExecutor {
             .map_err(|err| match err.kind() {
                 ErrorKind::PermissionDenied => CreateExecutorError::new(
                     CreateErrorType::PermissionError,
-                    "failed to write to docker compose due to incorrect permissions".to_owned(),
+                    "Failed to write to docker compose due to incorrect permissions".to_owned(),
                 ),
                 _ => CreateExecutorError::new(CreateErrorType::OtherIO, err.to_string()),
             })
